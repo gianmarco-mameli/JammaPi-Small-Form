@@ -8,7 +8,7 @@ case $response in
                   cd ~/JammaPi-Small-Form
                   git reset --hard origin/master
                   git pull
-                  wget -O - https://github.com/vince87/JammaPi-Small-Form/raw/master/install.sh | bash
+                  wget -O - https://github.com/gianmarco-mameli/JammaPi-Small-Form/raw/master/install.sh | bash
                ;;
                1)
                   bash ~/JammaPi-Small-Form/script/menu.sh
