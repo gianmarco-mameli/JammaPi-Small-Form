@@ -72,6 +72,10 @@ while [ "$1" != "" ]; do
             ;;
 	    	-JAMMA-AUD)
 			printf "\033[1;31m Attivo audio su JAMMA/JACK \033[0m\n"
+			sudo sed -i 's/#dtoverlay=pwm-2chan,pin=18,func=2,pin2=19,func2=2/dtoverlay=pwm-2chan,pin=18,func=2,pin2=19,func2=2/g' /boot/config.txt
+			sudo sed -i 's/#dtoverlay=audremap,pins_18_19/dtoverlay=audremap,pins_18_19/g' /boot/config.txt
+			sudo sed -i 's/#disable_audio_dither=1/disable_audio_dither=1/g' /boot/config.txt
+			sudo sed -i 's/#audio_pwm_mode=2/audio_pwm_mode=2/g' /boot/config.txt
 			amixer cset numid=3 "1"
 			sleep 5
             ;;
