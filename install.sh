@@ -35,11 +35,11 @@ sudo apt-get install -y git libjpeg-dev dialog
 	else
 	printf "\033[1;31m Installo overlay JammaPi \033[0m\n"
 	# sudo rm /boot/overlays/vga666.dtbo
-	sudo ln -s vga666.dtbo /boot/overlays/.
+	sudo ln -sf vga666.dtbo /boot/overlays/.
 	# sudo rm /boot/dt-blob.bin
-	sudo ln -s dt-blob.bin /boot/.
+	sudo ln -sf dt-blob.bin /boot/.
 	# sudo rm /etc/asound.conf
-	sudo ln -s script/asound.conf /etc/.
+	sudo ln -sf script/asound.conf /etc/.
 	sleep 2
 
   ##Modify Config.txt to Default
@@ -79,10 +79,10 @@ sudo apt-get install -y git libjpeg-dev dialog
 	sudo make install
 	sudo insmod joypi.ko
 	echo "Modulo impostato!"
-	ln -s /opt/JammaPi-Small-Form/joypi/JoyPi\ Joystick\ 0.cfg /opt/retropie/configs/all/retroarch-joypads/JoyPi\ Joystick\ 0.cfg
-	ln -s /opt/JammaPi-Small-Form/joypi/JoyPi\ Joystick\ 1.cfg /opt/retropie/configs/all/retroarch-joypads/JoyPi\ Joystick\ 1.cfg
+	ln -sf /opt/JammaPi-Small-Form/joypi/JoyPi\ Joystick\ 0.cfg /opt/retropie/configs/all/retroarch-joypads/JoyPi\ Joystick\ 0.cfg
+	ln -sf /opt/JammaPi-Small-Form/joypi/JoyPi\ Joystick\ 1.cfg /opt/retropie/configs/all/retroarch-joypads/JoyPi\ Joystick\ 1.cfg
 	sudo mv /opt/.emulationstation/es_input.cfg /opt/.emulationstation/es_input.cfg.bak
-	ln -s /opt/JammaPi-Small-Form/joypi/es_input.cfg /opt/retropie/configs/all/emulationstation/es_input.cfg
+	ln -sf /opt/JammaPi-Small-Form/joypi/es_input.cfg /opt/retropie/configs/all/emulationstation/es_input.cfg
         fi
 	sleep 2
 
@@ -90,7 +90,7 @@ sudo apt-get install -y git libjpeg-dev dialog
 	chmod u+x /opt/JammaPi-Small-Form/script/pixelperfect.sh
 	chmod u+x /opt/JammaPi-Small-Form/script/interfaccia.sh
 	chmod u+x /opt/JammaPi-Small-Form/script/jammapi.sh
-	sudo ln -s /opt/JammaPi-Small-Form/services/jammapi.service /etc/systemd/system/jammapi.service
+	sudo ln -sf /opt/JammaPi-Small-Form/services/jammapi.service /etc/systemd/system/jammapi.service
 	sudo systemctl daemon-reload
 	sudo systemctl enable jammapi.service
 	sudo systemctl start jammapi.service &
@@ -101,7 +101,7 @@ sudo apt-get install -y git libjpeg-dev dialog
 
 ##install jammapi menu script
 	printf "\033[1;31m Installo menu x RetroPie \033[0m\n"
-	ln -s /opt/JammaPi-Small-Form/script/menu.sh '/opt/RetroPie/retropiemenu/JammaPi.sh'
+	ln -sf /opt/JammaPi-Small-Form/script/menu.sh '/opt/RetroPie/retropiemenu/JammaPi.sh'
 	sleep 2
 
 #   ##Add Emulationstation basic themes...
@@ -112,10 +112,10 @@ sudo apt-get install -y git libjpeg-dev dialog
 
   ##install retropie resolution switch
 		printf "\033[1;31m installo script risoluzioni 15khz... \033[0m\n"
-		ln -s /opt/JammaPi-Small-Form/script/runcommand-onend.sh /opt/retropie/configs/all/runcommand-onend.sh
-		ln -s /opt/JammaPi-Small-Form/script/runcommand-onstart.sh /opt/retropie/configs/all/runcommand-onstart.sh
-		ln -s /opt/JammaPi-Small-Form/script/vertical_list.txt /opt/retropie/configs/all/vertical_list.txt
-		ln -s /opt/JammaPi-Small-Form/script/exceptions_list.txt /opt/retropie/configs/all/exceptions_list.txt
+		ln -sf /opt/JammaPi-Small-Form/script/runcommand-onend.sh /opt/retropie/configs/all/runcommand-onend.sh
+		ln -sf /opt/JammaPi-Small-Form/script/runcommand-onstart.sh /opt/retropie/configs/all/runcommand-onstart.sh
+		ln -sf /opt/JammaPi-Small-Form/script/vertical_list.txt /opt/retropie/configs/all/vertical_list.txt
+		ln -sf /opt/JammaPi-Small-Form/script/exceptions_list.txt /opt/retropie/configs/all/exceptions_list.txt
 
 		sudo grep 'crt_switch_resolution' /etc/fstab > /dev/null 2>&1
 		if [ $? -eq 0 ] ; then
