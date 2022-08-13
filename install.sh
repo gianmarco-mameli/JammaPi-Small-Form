@@ -101,7 +101,7 @@ sudo apt-get install -y git libjpeg-dev dialog
 
 ##install jammapi menu script
 	printf "\033[1;31m Installo menu x RetroPie \033[0m\n"
-	ln -sf /opt/JammaPi-Small-Form/script/menu.sh '/opt/RetroPie/retropiemenu/JammaPi.sh'
+	ln -sf /opt/JammaPi-Small-Form/script/menu.sh '/home/pi/RetroPie/retropiemenu/JammaPi.sh'
 	sleep 2
 
 #   ##Add Emulationstation basic themes...
