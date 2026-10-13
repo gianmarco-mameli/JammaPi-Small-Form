@@ -19,8 +19,8 @@ CHOICE=$(dialog --clear \
 
 clear
 case $CHOICE in
-        1) bash /home/pi/JammaPi-Small-Form/script/pixelperfect.sh -runc-on ;;
-        2) bash /home/pi/JammaPi-Small-Form/script/pixelperfect.sh -runc-off
-           bash /home/pi/JammaPi-Small-Form/script/pixelperfect.sh -off;;
+        1) bash /opt/JammaPi-Small-Form/script/pixelperfect.sh -runc-on ;;
+        2) bash /opt/JammaPi-Small-Form/script/pixelperfect.sh -runc-off
+           bash /opt/JammaPi-Small-Form/script/pixelperfect.sh -off;;
 esac
-bash ~/JammaPi/script/menu.sh
+bash /opt/JammaPi/script/menu.sh
