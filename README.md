@@ -8,6 +8,19 @@ Se il progetto era installato sotto `/opt`, spostare il clone in
 `/home/pi/JammaPi-Small-Form` e rieseguire l'installer dalla nuova posizione per
 aggiornare i collegamenti e il servizio systemd.
 
+### RetroPie su Raspbian Buster
+
+Prima di eseguire `apt-get update`, l'installer rileva Raspbian Buster e corregge
+le voci Buster dei vecchi mirror Raspbian in `/etc/apt/sources.list` e nei file
+`/etc/apt/sources.list.d/*.list`, usando `https://legacy.raspbian.org/raspbian/`.
+Ogni file modificato viene salvato una sola volta con suffisso `.jammapi.bak`.
+Le altre distribuzioni, i repository di terze parti e il repository separato
+`archive.raspberrypi.org/debian` non vengono modificati. Le verifiche delle
+firme APT e dei certificati HTTPS restano abilitate.
+
+Questo risolve il 404 del repository ritirato, ma Buster resta obsoleto:
+per gli aggiornamenti di sicurezza serve una versione supportata del sistema.
+
 ### Configurazione e reinstallazione
 
 L'installazione e la selezione HDMI/CRT ripuliscono le direttive JammaPi

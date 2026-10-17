@@ -202,6 +202,7 @@ class ConfigurationTests(unittest.TestCase):
         for name in ("vga666.dtbo", "dt-blob.bin"):
             (repository / name).write_text("fixture")
         for name in ("boot/overlays", "etc/systemd/system",
+                     "etc/apt/sources.list.d",
                      "opt/retropie/configs/all/retroarch-joypads",
                      "opt/retropie/configs/all/emulationstation",
                      "home/pi/RetroPie/retropiemenu", "opt/.emulationstation",
@@ -211,6 +212,13 @@ class ConfigurationTests(unittest.TestCase):
                      "opt/retropie/configs/all/retroarch.cfg"):
             (system / name).write_text("")
         original = system / "opt/.emulationstation/es_input.cfg"
+        (system / "etc/os-release").write_text(
+            'ID=raspbian\nVERSION_ID="10"\nVERSION_CODENAME=buster\n'
+        )
+        sources = system / "etc/apt/sources.list"
+        sources.write_text(
+            "deb http://raspbian.raspberrypi.org/raspbian buster main contrib\n"
+        )
         original.write_text("original joystick configuration")
         (system / "proc/device-tree/model").write_text("Raspberry Pi 4 Model B")
         # Only the installer's paths are redirected; no host system files are edited.
@@ -245,6 +253,7 @@ class ConfigurationTests(unittest.TestCase):
                 path: path.read_bytes()
                 for path in (system / "boot/config.txt", system / "etc/modules",
                              system / "opt/retropie/configs/all/retroarch.cfg",
+                             sources, sources.with_name("sources.list.jammapi.bak"),
                              original.with_suffix(".cfg.bak"))
             }
 
@@ -253,6 +262,8 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual(first, install())
         self.assertEqual(original.with_suffix(".cfg.bak").read_text(),
                          "original joystick configuration")
+        self.assertEqual(sources.read_text(),
+                         "deb https://legacy.raspbian.org/raspbian/ buster main contrib\n")
         self.assertEqual((system / "boot/overlays/vga666.dtbo").resolve(),
                          (repository / "vga666.dtbo").resolve())
         self.assertEqual((system / "etc/asound.conf").resolve(),
