@@ -29,8 +29,11 @@ La configurazione viene scritta in una sezione globale `[all]`: le altre
 impostazioni e sezioni restano invariate, ma eventuali personalizzazioni delle
 direttive gestite da JammaPi vengono sostituite.
 
-La selezione HDMI disabilita le direttive DPI e audio analogico; CRT le riattiva
-con il corretto overlay audio per Raspberry Pi 4 o per i modelli precedenti.
+Il menu video offre HDMI con audio JAMMA (stereo), oppure CRT con audio JAMMA
+(mono). HDMI disabilita le direttive DPI ma mantiene attivo l'audio analogico
+tramite la successiva selezione JAMMA, con il corretto overlay audio per
+Raspberry Pi 4 o per i modelli precedenti. L'audio HDMI resta selezionabile
+separatamente dal menu audio.
 Selezionare nuovamente la stessa uscita non accumula commenti o duplicati.
 L'installazione parte dai valori CRT e propone poi la scelta dell'uscita video.
 Anche `/etc/modules` e le opzioni CRT di RetroArch vengono normalizzati, mentre
@@ -39,6 +42,13 @@ il backup originale di `es_input.cfg`, se presente, non viene sovrascritto.
 I file `vga666.dtbo` e `dt-blob.bin` vengono copiati nella partizione `/boot`,
 non collegati simbolicamente: il filesystem FAT della partizione di avvio non
 supporta i link simbolici. Le reinstallazioni sostituiscono le copie esistenti.
+
+La selezione audio rileva le schede HDMI e Headphones da `/proc/asound/cards`
+e aggiorna il dispositivo PCM e il controllo predefinito in `/etc/asound.conf`
+usando gli identificativi ALSA, non numeri di scheda fissi. Sui vecchi kernel
+con scheda unica bcm2835 ALSA usa il controllo `PCM Playback Route` per nome.
+Le impostazioni mono/stereo vengono preservate. Se l'uscita non esiste, lo
+script segnala un errore senza cambiare il dispositivo ALSA.
 
 Il driver joystick usa `i2c_new_dummy_device()` sui kernel da 5.2 in poi
 (incluso 5.10 di Buster), mantenendo la vecchia API sui kernel precedenti.

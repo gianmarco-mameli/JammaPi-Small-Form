@@ -144,13 +144,23 @@ class ConfigurationTests(unittest.TestCase):
         model.write_text("Raspberry Pi 3 Model B")
         retroarch = configs / "retroarch.cfg"
         retroarch.write_text("")
+        cards = self.directory / "cards"
+        cards.write_text(
+            " 0 [b1 ]: bcm2835_hdmi - bcm2835 HDMI 1\n"
+            " 1 [Headphones ]: bcm2835_headpho - bcm2835 Headphones\n"
+        )
+        audio = self.directory / "asound.conf"
+        audio.write_text((ROOT / "script/asound.conf").read_text())
         for name in ("runcommand-onend.sh", "runcommand-onstart.sh"):
             (configs / name).symlink_to(ROOT / "script" / name)
-        for name in ("configure.sh", "interfaccia.sh", "pixelperfect.sh"):
+        for name in ("configure.sh", "interfaccia.sh", "pixelperfect.sh",
+                     "select-audio.sh"):
             text = (ROOT / "script" / name).read_text()
             text = text.replace("/boot/config.txt", str(self.config))
             text = text.replace("/proc/device-tree/model", str(model))
             text = text.replace("/opt/retropie/configs/all", str(configs))
+            text = text.replace("/etc/asound.conf", str(audio))
+            text = text.replace("/proc/asound/cards", str(cards))
             (scripts / name).write_text(text)
         commands = self.directory / "bin"
         commands.mkdir()
@@ -160,9 +170,9 @@ class ConfigurationTests(unittest.TestCase):
             command.chmod(0o755)
         environment = dict(os.environ, PATH=str(commands) + os.pathsep + os.environ["PATH"])
 
-        def select(mode):
+        def select(*modes):
             subprocess.run(
-                ["bash", str(scripts / "interfaccia.sh"), mode],
+                ["bash", str(scripts / "interfaccia.sh"), *modes],
                 check=True, env=environment, capture_output=True, text=True,
             )
             return self.config.read_text(), retroarch.read_text()
@@ -177,6 +187,18 @@ class ConfigurationTests(unittest.TestCase):
                 for name in ("runcommand-onend.sh", "runcommand-onstart.sh"):
                     self.assertEqual((configs / name).is_symlink(), mode == "-SCART")
                     self.assertEqual((configs / (name + ".off")).is_symlink(), mode == "-HDMI")
+
+            modes = ("-HDMI", "-JAMMA-AUD")
+            first = select(*modes)
+            self.assertEqual(first, select(*modes))
+            self.assertIn("#HDMI\n", first[0])
+            self.assertIn("#*dtoverlay=vga666,mode6\n", first[0])
+            self.assertIn("\naudio_pwm_mode=3\n", first[0])
+            overlay = ("audremap,pins_18_19" if "Pi 4" in model_name
+                       else "pwm-2chan,pin=18,func=2,pin2=19,func2=2")
+            self.assertIn("\ndtoverlay=" + overlay + "\n", first[0])
+            self.assertIn("plughw:CARD=Headphones,DEV=0", audio.read_text())
+            self.assertNotIn("plughw:CARD=b1", audio.read_text())
 
         select("-HDMI")
         for name in ("runcommand-onend.sh", "runcommand-onstart.sh"):

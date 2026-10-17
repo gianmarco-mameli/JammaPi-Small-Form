@@ -51,13 +51,13 @@ while [ "$1" != "" ]; do
             ;;
 	    	-HDMI-AUD)
 			printf "\033[1;31m Attivo audio su HDMI \033[0m\n"
-			amixer cset numid=3 "2"
+			sudo bash "$SCRIPT_DIR/select-audio.sh" HDMI
 			sleep 5
             ;;
 	    	-JAMMA-AUD)
 			printf "\033[1;31m Attivo audio su JAMMA/JACK \033[0m\n"
 			configure_video audio
-			amixer cset numid=3 "1"
+			sudo bash "$SCRIPT_DIR/select-audio.sh" JAMMA
 			sleep 5
             ;;
 	    	-AUD-MONO)
