@@ -211,6 +211,8 @@ class ConfigurationTests(unittest.TestCase):
         for name in ("boot/config.txt", "etc/modules",
                      "opt/retropie/configs/all/retroarch.cfg"):
             (system / name).write_text("")
+        (system / "boot/overlays/vga666.dtbo").write_text("old overlay")
+        (system / "boot/dt-blob.bin").write_text("old device tree")
         original = system / "opt/.emulationstation/es_input.cfg"
         (system / "etc/os-release").write_text(
             'ID=raspbian\nVERSION_ID="10"\nVERSION_CODENAME=buster\n'
@@ -233,6 +235,11 @@ class ConfigurationTests(unittest.TestCase):
             ("sudo", 'exec "$@"'), ("lsmod", "echo 'joypi 123 0'"),
             ("apt-get", ":"), ("systemctl", ":"), ("sleep", ":"),
             ("reboot", ":"),
+            ("ln", 'for target in "$@"; do\n'
+                   'case "$target" in\n'
+                   f'"{system}/boot/"*) echo "Boot partition cannot use symlinks" >&2; exit 1 ;;\n'
+                   'esac\ndone\n'
+                   f'exec "{shutil.which("ln")}" "$@"'),
         ):
             command = commands / name
             command.write_text("#!/bin/bash\n" + body + "\n")
@@ -252,6 +259,8 @@ class ConfigurationTests(unittest.TestCase):
             return {
                 path: path.read_bytes()
                 for path in (system / "boot/config.txt", system / "etc/modules",
+                             system / "boot/overlays/vga666.dtbo",
+                             system / "boot/dt-blob.bin",
                              system / "opt/retropie/configs/all/retroarch.cfg",
                              sources, sources.with_name("sources.list.jammapi.bak"),
                              original.with_suffix(".cfg.bak"))
@@ -264,8 +273,11 @@ class ConfigurationTests(unittest.TestCase):
                          "original joystick configuration")
         self.assertEqual(sources.read_text(),
                          "deb https://legacy.raspbian.org/raspbian/ buster main contrib\n")
-        self.assertEqual((system / "boot/overlays/vga666.dtbo").resolve(),
-                         (repository / "vga666.dtbo").resolve())
+        for target, source in (("boot/overlays/vga666.dtbo", "vga666.dtbo"),
+                               ("boot/dt-blob.bin", "dt-blob.bin")):
+            self.assertFalse((system / target).is_symlink())
+            self.assertEqual((system / target).read_bytes(),
+                             (repository / source).read_bytes())
         self.assertEqual((system / "etc/asound.conf").resolve(),
                          (repository / "script/asound.conf").resolve())
         for target, source in (

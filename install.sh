@@ -37,8 +37,8 @@ dialog --title "Script installazione JammaPi" --msgbox "Attenzione verranno ora 
 	# cd /home/pi/JammaPi-Small-Form
 	printf "\033[1;31m Modifico il config.txt per la JammaPi \033[0m\n"
 	printf "\033[1;31m Installo overlay JammaPi \033[0m\n"
-	sudo ln -sfn "$INSTALL_DIR/vga666.dtbo" /boot/overlays/vga666.dtbo
-	sudo ln -sfn "$INSTALL_DIR/dt-blob.bin" /boot/dt-blob.bin
+	sudo install -m 644 "$INSTALL_DIR/vga666.dtbo" /boot/overlays/vga666.dtbo
+	sudo install -m 644 "$INSTALL_DIR/dt-blob.bin" /boot/dt-blob.bin
 	sudo ln -sfn "$INSTALL_DIR/script/asound.conf" /etc/asound.conf
 	sleep 2
 

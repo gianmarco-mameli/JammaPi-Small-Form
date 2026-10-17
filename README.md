@@ -36,6 +36,10 @@ L'installazione parte dai valori CRT e propone poi la scelta dell'uscita video.
 Anche `/etc/modules` e le opzioni CRT di RetroArch vengono normalizzati, mentre
 il backup originale di `es_input.cfg`, se presente, non viene sovrascritto.
 
+I file `vga666.dtbo` e `dt-blob.bin` vengono copiati nella partizione `/boot`,
+non collegati simbolicamente: il filesystem FAT della partizione di avvio non
+supporta i link simbolici. Le reinstallazioni sostituiscono le copie esistenti.
+
 Test delle modifiche ai file, senza privilegi root o hardware Raspberry Pi:
 
 ```sh
