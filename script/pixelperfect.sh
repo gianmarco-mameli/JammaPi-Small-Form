@@ -4,6 +4,29 @@
 # Attiva o disattiva il pixel-perfect
 #
 
+set -e
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+set_runcommand()
+{
+    local name source target
+    for name in runcommand-onend.sh runcommand-onstart.sh; do
+        source="/opt/retropie/configs/all/$name$1"
+        target="/opt/retropie/configs/all/$name$2"
+        if [ -e "$source" ] || [ -L "$source" ]; then
+            mv -f "$source" "$target"
+        elif [ ! -e "$target" ] && [ ! -L "$target" ]; then
+            echo "ERRORE: Script mancante: $source / $target" >&2
+            return 1
+        fi
+    done
+}
+
+set_resolution()
+{
+    sudo bash "$SCRIPT_DIR/configure.sh" retroarch /opt/retropie/configs/all/retroarch.cfg "$1"
+}
+
 
 usage()
 {
@@ -26,38 +49,34 @@ while [ "$1" != "" ]; do
             exit
             ;;
         -on)
-			sudo grep 'Pi 4' /proc/device-tree/model > /dev/null 2>&1
-			if [ $? -eq 0 ] ; then
+			MODEL=$(tr -d '\0' < /proc/device-tree/model)
+			if [[ "$MODEL" == *"Pi 4"* ]]; then
         		echo "ERRORE: Impossibile attivare il pixel perfect su pi4 al momento!"
+				set_resolution 0
 			else
 				printf "\033[1;31m Attivo il Pixel-Perfect per la JammaPi \033[0m\n"
-				sudo sed -i 's/crt_switch_resolution = "0"/crt_switch_resolution = "1"/g' /opt/retropie/configs/all/retroarch.cfg
-				sudo sed -i 's/crt_switch_resolution_super = "0"/crt_switch_resolution_super = "1920"/g' /opt/retropie/configs/all/retroarch.cfg
+				set_resolution 1
 				sleep 2
 			fi
             ;;
 	 -on31)
 			printf "\033[1;31m Attivo il Pixel-Perfect per la JammaPi \033[0m\n"
-			sudo sed -i 's/crt_switch_resolution = "0"/crt_switch_resolution = "2"/g' /opt/retropie/configs/all/retroarch.cfg
-			sudo sed -i 's/crt_switch_resolution_super = "0"/crt_switch_resolution_super = "1920"/g' /opt/retropie/configs/all/retroarch.cfg
+			set_resolution 2
 			sleep 2
             ;;
 	-runc-on)
 			printf "\033[1;31m Attivo il Runcommand \033[0m\n"
-			mv /opt/retropie/configs/all/runcommand-onend.sh.off /opt/retropie/configs/all/runcommand-onend.sh
-			mv /opt/retropie/configs/all/runcommand-onstart.sh.off /opt/retropie/configs/all/runcommand-onstart.sh
+			set_runcommand .off ""
 			sleep 2
             ;;
         -off)
 			printf "\033[1;31m Disattivo il Pixel-Perfect per la JammaPi \033[0m\n"
-            sudo sed -i 's/crt_switch_resolution = "1"/crt_switch_resolution = "0"/g' /opt/retropie/configs/all/retroarch.cfg
-			sudo sed -i 's/crt_switch_resolution_super = "1920"/crt_switch_resolution_super = "0"/g' /opt/retropie/configs/all/retroarch.cfg
+			set_resolution 0
 			sleep 2
             ;;
 	-runc-off)
 			printf "\033[1;31m Disattivo il runcommand \033[0m\n"
-			mv /opt/retropie/configs/all/runcommand-onend.sh /opt/retropie/configs/all/runcommand-onend.sh.off
-			mv /opt/retropie/configs/all/runcommand-onstart.sh /opt/retropie/configs/all/runcommand-onstart.sh.off
+			set_runcommand "" .off
 			sleep 2
             ;;
         *)

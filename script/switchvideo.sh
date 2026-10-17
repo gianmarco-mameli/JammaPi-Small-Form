@@ -26,14 +26,12 @@ case $CHOICE in
             response=$?
 case $response in
                0)
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -SCART
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -JAMMA-AUD
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -AUD-MONO
+                  bash /home/pi/JammaPi-Small-Form/script/interfaccia.sh -SCART -JAMMA-AUD -AUD-MONO || exit $?
                   echo "Riavvio in corso!"
                   sudo reboot
                ;;
                1)
-                  bash /opt/JammaPi/script/switchvideo.sh
+                  bash /home/pi/JammaPi-Small-Form/script/switchvideo.sh
                ;;
             esac
             ;;
@@ -45,19 +43,17 @@ case $response in
             response=$?
 case $response in
                0)
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -HDMI
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -HDMI-AUD
-                  bash /opt/JammaPi-Small-Form/script/interfaccia.sh -AUD-STEREO
+                  bash /home/pi/JammaPi-Small-Form/script/interfaccia.sh -HDMI -HDMI-AUD -AUD-STEREO || exit $?
                   echo "Riavvio in corso!"
                   sudo reboot
                ;;
                1)
-                  bash /opt/JammaPi-Small-Form/script/switchvideo.sh
+                  bash /home/pi/JammaPi-Small-Form/script/switchvideo.sh
                ;;
             esac
             ;;
 
 esac
 if [ "$1" != "1" ] ; then
-bash /opt/JammaPi-Small-Form/script/menu.sh
+bash /home/pi/JammaPi-Small-Form/script/menu.sh
 fi
