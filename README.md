@@ -40,6 +40,18 @@ I file `vga666.dtbo` e `dt-blob.bin` vengono copiati nella partizione `/boot`,
 non collegati simbolicamente: il filesystem FAT della partizione di avvio non
 supporta i link simbolici. Le reinstallazioni sostituiscono le copie esistenti.
 
+Il driver joystick usa `i2c_new_dummy_device()` sui kernel da 5.2 in poi
+(incluso 5.10 di Buster), mantenendo la vecchia API sui kernel precedenti.
+Per ricompilare dopo un aggiornamento del sorgente:
+
+```sh
+cd /home/pi/JammaPi-Small-Form/joypi
+make clean
+make
+sudo make install
+sudo modprobe joypi
+```
+
 Test delle modifiche ai file, senza privilegi root o hardware Raspberry Pi:
 
 ```sh

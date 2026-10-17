@@ -13,7 +13,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <linux/i2c.h>
+#include <linux/err.h>
+#include <linux/kernel.h>
 #include <linux/slab.h>
+#include <linux/version.h>
 #include "mcp23017.h"
 
 #define MCP23017_IODIRA    0x00
@@ -51,14 +54,41 @@ struct MCP23017 *mcp23017_init(void)
 {
 	int i;
 	struct MCP23017 *m = kzalloc(sizeof(struct MCP23017), GFP_KERNEL);
-	if(m) {
-		m->adapter = i2c_get_adapter(0);
-		for(i = 0; i < MAX_MCP23017_CLIENTS; ++i) {
-			m->client[i] = i2c_new_dummy(m->adapter, 0x20 + i);
+	if(!m)
+		return NULL;
+
+	m->adapter = i2c_get_adapter(0);
+	if(!m->adapter) {
+		pr_err("[JOYPI] I2C adapter 0 is unavailable.\n");
+		goto fail_adapter;
+	}
+	for(i = 0; i < MAX_MCP23017_CLIENTS; ++i) {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0)
+		m->client[i] = i2c_new_dummy_device(m->adapter, 0x20 + i);
+		if(IS_ERR(m->client[i])) {
+			pr_err("[JOYPI] Cannot register I2C address 0x%02x: %ld\n",
+			       0x20 + i, PTR_ERR(m->client[i]));
+			goto fail_client;
 		}
+#else
+		m->client[i] = i2c_new_dummy(m->adapter, 0x20 + i);
+		if(!m->client[i]) {
+			pr_err("[JOYPI] Cannot register I2C address 0x%02x.\n",
+			       0x20 + i);
+			goto fail_client;
+		}
+#endif
 	}
 
 	return m;
+
+fail_client:
+	while(i > 0)
+		i2c_unregister_device(m->client[--i]);
+	i2c_put_adapter(m->adapter);
+fail_adapter:
+	kfree(m);
+	return NULL;
 }
 
 void mcp23017_set_iodira(struct MCP23017 *m, uint8_t id, uint8_t pins)

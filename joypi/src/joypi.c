@@ -116,6 +116,7 @@ int __init joypi_init(void)
 	joy = (struct JoyPi *)kzalloc(sizeof(struct JoyPi), GFP_KERNEL);
 	if(!joy) {
 		pr_err("Failed to allocate memory for joypi.");
+		err = -ENOMEM;
 		goto fail0;	
 	}
 
@@ -124,6 +125,7 @@ int __init joypi_init(void)
 	joy->io_expander = mcp23017_init();
 	if(!joy->io_expander) {
 		pr_err("Failed to initialize mcp23017 i2c.");
+		err = -ENODEV;
 		goto fail1;
 	}
 
